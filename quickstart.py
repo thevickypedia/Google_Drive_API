@@ -1,12 +1,14 @@
+import io
 import os.path
 import pickle
 
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseDownload
 
 # If modifying these scopes, delete the file token.pickle.
-SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
+SCOPES = ['https://www.googleapis.com/auth/drive']
 
 
 def main():
@@ -49,6 +51,16 @@ def main():
         print('Files:')
         for item in items:
             print(item['name'], item['id'])
+
+    # download files using file_id
+    file_id = 'FILE ID HERE'
+    req = service.files().get_media(fileId=file_id)
+    fh = io.BytesIO()
+    downloader = MediaIoBaseDownload(fh, req)
+    done = False
+    while done is False:
+        status, done = downloader.next_chunk()
+        print(f'Download {int(status.progress() * 100)}')
 
 
 if __name__ == '__main__':
