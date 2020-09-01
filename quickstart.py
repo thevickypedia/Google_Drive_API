@@ -35,8 +35,12 @@ def main():
     service = build('drive', 'v3', credentials=creds)
 
     # # Call the Drive v3 API
-    results = service.files().list(
-        pageSize=10, fields="nextPageToken, files(id, name)").execute()
+    # reads sub-folders
+    results = service.files().list(q="mimeType='application/vnd.google-apps.folder' and trashed = false",
+                                   fields="nextPageToken, files(id, name)", pageSize=400).execute()
+    # # reads only the root folder
+    # results = service.files().list(
+    #     pageSize=10, fields="nextPageToken, files(id, name)").execute()
     items = results.get('files', [])
 
     if not items:
